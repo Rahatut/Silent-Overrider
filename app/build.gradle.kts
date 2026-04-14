@@ -1,0 +1,60 @@
+apply(plugin = "com.android.application")
+apply(plugin = "org.jetbrains.kotlin.android")
+
+android {
+    namespace = "com.rahatut.silentoverrider"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.rahatut.silentoverrider"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "TRIGGER_KEYWORD",
+            "\"${project.findProperty("triggerKeyword")?.toString() ?: "OVERRIDE_RING"}\""
+        )
+        buildConfigField("Int", "ALERT_DURATION_SECONDS", "30")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            isMinifyEnabled = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+    lint {
+        abortOnError = true
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.activity:activity-ktx:1.9.2")
+
+    testImplementation("junit:junit:4.13.2")
+}

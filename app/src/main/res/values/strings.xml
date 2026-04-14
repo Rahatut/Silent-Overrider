@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Silent Overrider</string>
+    <string name="notification_channel_name">Silent Override Alerts</string>
+    <string name="notification_title">Silent override active</string>
+    <string name="notification_content">Playing remote alert sound</string>
+</resources>
