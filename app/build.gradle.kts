@@ -1,5 +1,7 @@
-apply(plugin = "com.android.application")
-apply(plugin = "org.jetbrains.kotlin.android")
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
 
 android {
     namespace = "com.rahatut.silentoverrider"
@@ -18,7 +20,7 @@ android {
             "TRIGGER_KEYWORD",
             "\"${project.findProperty("triggerKeyword")?.toString() ?: "OVERRIDE_RING"}\""
         )
-        buildConfigField("Int", "ALERT_DURATION_SECONDS", "30")
+        buildConfigField("int", "ALERT_DURATION_SECONDS", "30")
     }
 
     buildTypes {

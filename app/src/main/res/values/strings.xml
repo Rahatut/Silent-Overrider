@@ -3,4 +3,14 @@
     <string name="notification_channel_name">Silent Override Alerts</string>
     <string name="notification_title">Silent override active</string>
     <string name="notification_content">Playing remote alert sound</string>
+    <string name="authorized_numbers">Authorized numbers</string>
+    <string name="phone_number_hint">Phone number</string>
+    <string name="add_number">Add number</string>
+    <string name="remove_selected">Remove selected</string>
+    <string name="selected_number">Selected number</string>
+    <string name="trigger_settings">Trigger settings</string>
+    <string name="keyword_hint">Trigger keyword (SMS text)</string>
+    <string name="duration_hint">Alert duration in seconds (5-300)</string>
+    <string name="save_settings">Save settings</string>
+    <string name="test_alert">Test alert now</string>
 </resources>

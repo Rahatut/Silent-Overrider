@@ -14,9 +14,10 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.rahatut.silentoverrider.BuildConfig
 import com.rahatut.silentoverrider.R
+import com.rahatut.silentoverrider.storage.TriggerSettingsStore
 
 class RingService : Service() {
 
@@ -27,6 +28,7 @@ class RingService : Service() {
     private var previousRingerMode: Int = AudioManager.RINGER_MODE_NORMAL
     private var previousAlarmVolume: Int = 0
     private var previousRingVolume: Int = 0
+    private var ringerModeWasChanged: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
@@ -57,7 +59,15 @@ class RingService : Service() {
         previousAlarmVolume = manager.getStreamVolume(AudioManager.STREAM_ALARM)
         previousRingVolume = manager.getStreamVolume(AudioManager.STREAM_RING)
 
-        manager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+        try {
+            manager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+            ringerModeWasChanged = true
+        } catch (e: SecurityException) {
+            // Some devices block ringer-mode changes unless Notification Policy Access is granted.
+            ringerModeWasChanged = false
+            Log.w(TAG, "Ringer mode change denied by system policy", e)
+        }
+
         manager.setStreamVolume(AudioManager.STREAM_RING, manager.getStreamMaxVolume(AudioManager.STREAM_RING), 0)
         manager.setStreamVolume(AudioManager.STREAM_ALARM, manager.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0)
 
@@ -88,13 +98,22 @@ class RingService : Service() {
 
     private fun restoreAudioState() {
         val manager = audioManager ?: return
-        manager.ringerMode = previousRingerMode
+
+        if (ringerModeWasChanged) {
+            try {
+                manager.ringerMode = previousRingerMode
+            } catch (e: SecurityException) {
+                Log.w(TAG, "Unable to restore ringer mode", e)
+            }
+        }
+
         manager.setStreamVolume(AudioManager.STREAM_ALARM, previousAlarmVolume, 0)
         manager.setStreamVolume(AudioManager.STREAM_RING, previousRingVolume, 0)
     }
 
     private fun scheduleStop() {
-        mainHandler.postDelayed({ stopSelf() }, BuildConfig.ALERT_DURATION_SECONDS * 1000L)
+        val durationSeconds = TriggerSettingsStore(applicationContext).getAlertDurationSeconds()
+        mainHandler.postDelayed({ stopSelf() }, durationSeconds * 1000L)
     }
 
     private fun buildNotification(): Notification {
@@ -120,6 +139,7 @@ class RingService : Service() {
     }
 
     companion object {
+        private const val TAG = "RingService"
         private const val CHANNEL_ID = "sors_ring_channel"
         private const val NOTIFICATION_ID = 1001
     }
