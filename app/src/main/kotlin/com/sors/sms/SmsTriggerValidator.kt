@@ -9,7 +9,7 @@ class SmsTriggerValidator(
 ) {
     fun isValidTrigger(message: SmsMessage): Boolean {
         val normalizedBody = message.body.trim()
-        if (!normalizedBody.equals(config.keyword, ignoreCase = true)) {
+        if (normalizedBody != config.keyword) {
             return false
         }
         return whitelistStore.contains(message.senderAddress)
